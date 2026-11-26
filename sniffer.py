@@ -8,12 +8,8 @@ LOG_DIR = Path("traffic_logs")
 LOG_FILE = LOG_DIR / "can_sniffer.csv"
 
 
-def capture_traffic(duration=None):
+def capture_traffic(bus, duration=None):
     print("start sniffing module")
-    bus = can.interface.Bus(
-        channel=VCAN_CHANNEL,
-        bustype=CAN_INTERFACE
-    )
 
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -50,9 +46,12 @@ def capture_traffic(duration=None):
                 msg.is_extended_id
             ])
 
-    bus.shutdown()
 
 def main():
+    bus = can.interface.Bus(
+    channel=VCAN_CHANNEL,
+    bustype=CAN_INTERFACE
+    )
     try:
         capture_traffic()
         print("shutdown_sniffer_Module")

