@@ -9,23 +9,23 @@ This project extends the YES, CARLA CAN simulation environment with additional a
 
 ```text
 cyberattacks-module/
-├── attacks/
-│   ├── replay.py
-│   ├── sniffer.py
-│   └── payload_corruption.py
-├── defense/
-│   └── IDS_canbert_plus.py
-├── datasets/
-│   ├── raw/
-│   │   ├── can_sniffer.csv
-│   │   ├── spoofing.log
-│   │   ├── fuzzy.log
-│   │   └── replay.log
-│   └── processed/
-│       ├── carla_benign.csv
-│       ├── carla_train.csv
-│       └── carla_labeled_full.csv
-└── README.md
+\u251c\u2500\u2500 attacks/
+\u2502   \u251c\u2500\u2500 replay.py
+\u2502   \u251c\u2500\u2500 sniffer.py
+\u2502   \u2514\u2500\u2500 payload_corruption.py
+\u251c\u2500\u2500 defense/
+\u2502   \u2514\u2500\u2500 IDS_canbert_plus.py
+\u251c\u2500\u2500 datasets/
+\u2502   \u251c\u2500\u2500 raw/
+\u2502   \u2502   \u251c\u2500\u2500 can_sniffer.csv
+\u2502   \u2502   \u251c\u2500\u2500 spoofing.log
+\u2502   \u2502   \u251c\u2500\u2500 fuzzy.log
+\u2502   \u2502   \u2514\u2500\u2500 replay.log
+\u2502   \u2514\u2500\u2500 processed/
+\u2502       \u251c\u2500\u2500 carla_benign.csv
+\u2502       \u251c\u2500\u2500 carla_train.csv
+\u2502       \u2514\u2500\u2500 carla_labeled_full.csv
+\u2514\u2500\u2500 README.md
 ```
 
 ## Attack Modules
@@ -63,22 +63,16 @@ Its main characteristics include:
 
 The implementation enables controlled evaluation of replay detection mechanisms within the YES, CARLA CAN simulation environment.
 
-### Fake Data Fabrication (I1) – Payload Corruption
+### Fake Data Fabrication (I1) \u2013 Payload Corruption
 
-**Status: Under Development**
+Payload corruption is integrated into `attacks/replay.py`.
 
-This module implements a Fake Data Fabrication experiment based on payload bit flipping.
+The attack preserves the original CAN identifier and DLC while modifying selected payload bits through a bitwise XOR operation.
 
-The original CAN identifier and DLC are preserved, while selected payload bits are modified through a bitwise XOR operation.
+The replay module supports two payload-corruption modes:
 
-The module supports the following configurations:
-
-- User-defined CAN ID and binary word.
-- User-defined CAN ID and randomly generated binary word.
-- Randomly selected CAN ID and binary word.
-- Randomly selected CAN ID with a user-defined binary word.
-
-The implementation reuses the CAN traffic sniffer to obtain legitimate payloads before applying corruption.
+- Fixed XOR mask supplied by the user through `--mask`.
+- Random XOR mask generated automatically when `--fake_data` is enabled without `--mask`.
 
 The XOR operation allows precise control over which bits are modified:
 
@@ -94,9 +88,9 @@ Binary word:      00000101
 Corrupted data:   10110001
 ```
 
-The current implementation generates an offline labeled dataset containing original and corrupted payloads.
+When a fixed mask is provided, the same mask is used for the replayed CAN messages. When no mask is provided, a new random mask is generated according to the DLC of each message.
 
-This module is being developed to investigate the ability of intrusion detection systems to identify previously unseen payload manipulation patterns.
+The payload length and CAN DLC are preserved after the XOR operation.
 
 Payload Corruption was not included in the CANBERT+ supervised fine-tuning dataset.
 
@@ -144,7 +138,7 @@ The architecture does not directly use message timestamps as model inputs.
 
 The training process consists of two stages: benign traffic pre-training and supervised fine-tuning.
 
-#### Stage 1 – Pre-training
+#### Stage 1 \u2013 Pre-training
 
 The model was initially trained exclusively on benign CAN traffic collected from YES, CARLA CAN.
 
@@ -164,7 +158,7 @@ Custom vocabularies were generated from the collected traffic, representing CAN 
 
 The pre-training stage establishes a representation of legitimate CAN communication patterns.
 
-#### Stage 2 – Supervised Fine-tuning
+#### Stage 2 \u2013 Supervised Fine-tuning
 
 The pre-trained model was subsequently fine-tuned using benign and malicious CAN traffic.
 
@@ -411,19 +405,19 @@ The following directory structure is expected:
 
 ```text
 yes-carla-can/
-└── defense/
-    ├── IDS_canbert_plus.py
-    ├── CanBERTplus/
-    │   ├── config.py
-    │   ├── can_finetune.py
-    │   ├── can_ids.py
-    │   └── model/
-    │       ├── canid_vocab.txt
-    │       ├── datalen_vocab.txt
-    │       └── data_vocab.txt
-    └── checkpoints/
-        ├── orig_ids.ckpt
-        └── carla_ids.ckpt
+\u2514\u2500\u2500 defense/
+    \u251c\u2500\u2500 IDS_canbert_plus.py
+    \u251c\u2500\u2500 CanBERTplus/
+    \u2502   \u251c\u2500\u2500 config.py
+    \u2502   \u251c\u2500\u2500 can_finetune.py
+    \u2502   \u251c\u2500\u2500 can_ids.py
+    \u2502   \u2514\u2500\u2500 model/
+    \u2502       \u251c\u2500\u2500 canid_vocab.txt
+    \u2502       \u251c\u2500\u2500 datalen_vocab.txt
+    \u2502       \u2514\u2500\u2500 data_vocab.txt
+    \u2514\u2500\u2500 checkpoints/
+        \u251c\u2500\u2500 orig_ids.ckpt
+        \u2514\u2500\u2500 carla_ids.ckpt
 ```
 
 The vocabulary files must remain consistent with the trained checkpoints. Regenerating the vocabularies may result in incompatibility with the existing model parameters.
@@ -439,6 +433,110 @@ conda activate n4s_env
 ```
 
 The simulator provides the virtual CAN infrastructure used by the experimental modules.
+
+## Running the Attacks
+
+Run the attack commands from the root directory of the configured YES, CARLA CAN project while the simulation environment is active.
+
+### Replay Attack
+
+The replay attack first captures legitimate CAN traffic for the duration specified with `--duration`. It then retransmits the captured messages while preserving the average transmission interval observed for each CAN ID.
+
+Basic replay attack with a 3-second sniffing period:
+
+```bash
+PYTHONPATH=. python3 attacks/replay.py --duration 3
+```
+
+Example with a 10-second sniffing period:
+
+```bash
+PYTHONPATH=. python3 attacks/replay.py --duration 10
+```
+
+Stop the attack with `Ctrl+C`.
+
+### Replay Attack with Fixed Payload Corruption
+
+Payload corruption can be enabled directly in the replay attack with `--fake_data`.
+
+To use a fixed XOR mask:
+
+```bash
+PYTHONPATH=. python3 attacks/replay.py --duration 3 --fake_data --mask 00000001
+```
+
+Another example using an 8-bit mask:
+
+```bash
+PYTHONPATH=. python3 attacks/replay.py --duration 3 --fake_data --mask 11111111
+```
+
+The value supplied to `--mask` must be a binary word containing only `0` and `1`.
+
+The fixed mask is applied through XOR while preserving the original CAN ID and DLC.
+
+### Replay Attack with Random Payload Corruption
+
+If `--fake_data` is enabled without `--mask`, the replay module generates a random XOR mask for each transmitted CAN message:
+
+```bash
+PYTHONPATH=. python3 attacks/replay.py --duration 3 --fake_data
+```
+
+The random mask size is automatically limited according to the DLC of the current CAN message.
+
+Therefore, `attacks/replay.py` supports three operating modes:
+
+```text
+Normal Replay
+Replay + Fixed XOR Payload Corruption
+Replay + Random XOR Payload Corruption
+```
+
+### Spoofing Attack
+
+Feature spoofing is provided by the original YES, CARLA CAN `cyberattacks_module.py`.
+
+For example, the hand-brake spoofing attack can be executed with:
+
+```bash
+conda run --no-capture-output -n n4s_env python3 cyberattacks_module.py --feature hand_brake --period 0.001
+```
+
+The `--period` argument defines the interval between injected CAN messages.
+
+Other supported spoofing targets can be listed with:
+
+```bash
+conda run --no-capture-output -n n4s_env python3 cyberattacks_module.py --help
+```
+
+Stop the attack with `Ctrl+C`.
+
+### Fuzzy Attack
+
+The fuzzy attack is also provided by the original YES, CARLA CAN attack module.
+
+Run it with:
+
+```bash
+conda run --no-capture-output -n n4s_env python3 cyberattacks_module.py --feature fuzzy --period 0.05
+```
+
+The `--period` argument controls the interval between generated CAN messages.
+
+Stop the attack with `Ctrl+C`.
+
+### Attack Execution Summary
+
+| Attack | Command / Mode | Origin |
+|---|---|---|
+| Replay | `PYTHONPATH=. python3 attacks/replay.py --duration <seconds>` | This project |
+| Replay + fixed payload corruption | `--fake_data --mask <binary_mask>` | This project |
+| Replay + random payload corruption | `--fake_data` | This project |
+| Feature spoofing | `--feature hand_brake --period 0.001` | YES, CARLA CAN |
+| Fuzzy | `--feature fuzzy --period 0.05` | YES, CARLA CAN |
 
 ## Running CANBERT+
 
@@ -493,9 +591,9 @@ The attack modules are located in the `attacks/` directory.
 
 They are designed for controlled experimentation within YES, CARLA CAN and depend on its traffic capture and virtual CAN communication infrastructure.
 
-The original simulation environment provides additional attack scenarios, including Spoofing and Fuzzy.
+The custom Replay module supports normal replay, fixed XOR payload corruption, and random XOR payload corruption.
 
-The Payload Corruption module additionally supports offline generation of labeled experimental datasets.
+The original YES, CARLA CAN simulation environment provides the Spoofing and Fuzzy attack scenarios through `cyberattacks_module.py`.
 
 ## Research Objectives
 
