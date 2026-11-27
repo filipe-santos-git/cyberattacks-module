@@ -378,24 +378,6 @@ unzip canbert_plus_carla.zip -d /path/to/yes-carla-can/
 
 Replace `/path/to/yes-carla-can/` with the actual installation path.
 
-The following directory structure is expected:
-
-```text
-yes-carla-can/
-\u2514\u2500\u2500 defense/
-    \u251c\u2500\u2500 IDS_canbert_plus.py
-    \u251c\u2500\u2500 CanBERTplus/
-    \u2502   \u251c\u2500\u2500 config.py
-    \u2502   \u251c\u2500\u2500 can_finetune.py
-    \u2502   \u251c\u2500\u2500 can_ids.py
-    \u2502   \u2514\u2500\u2500 model/
-    \u2502       \u251c\u2500\u2500 canid_vocab.txt
-    \u2502       \u251c\u2500\u2500 datalen_vocab.txt
-    \u2502       \u2514\u2500\u2500 data_vocab.txt
-    \u2514\u2500\u2500 checkpoints/
-        \u251c\u2500\u2500 orig_ids.ckpt
-        \u2514\u2500\u2500 carla_ids.ckpt
-```
 
 The vocabulary files must remain consistent with the trained checkpoints. Regenerating the vocabularies may result in incompatibility with the existing model parameters.
 
