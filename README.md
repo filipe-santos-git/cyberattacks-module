@@ -5,29 +5,6 @@ An experimental framework for automotive cybersecurity research, focused on Cont
 
 This project extends the YES, CARLA CAN simulation environment with additional attack modules, experimental datasets, and a Transformer-based Intrusion Detection System (IDS).
 
-## Repository Structure
-
-```text
-cyberattacks-module/
-\u251c\u2500\u2500 attacks/
-\u2502   \u251c\u2500\u2500 replay.py
-\u2502   \u251c\u2500\u2500 sniffer.py
-\u2502   \u2514\u2500\u2500 payload_corruption.py
-\u251c\u2500\u2500 defense/
-\u2502   \u2514\u2500\u2500 IDS_canbert_plus.py
-\u251c\u2500\u2500 datasets/
-\u2502   \u251c\u2500\u2500 raw/
-\u2502   \u2502   \u251c\u2500\u2500 can_sniffer.csv
-\u2502   \u2502   \u251c\u2500\u2500 spoofing.log
-\u2502   \u2502   \u251c\u2500\u2500 fuzzy.log
-\u2502   \u2502   \u2514\u2500\u2500 replay.log
-\u2502   \u2514\u2500\u2500 processed/
-\u2502       \u251c\u2500\u2500 carla_benign.csv
-\u2502       \u251c\u2500\u2500 carla_train.csv
-\u2502       \u2514\u2500\u2500 carla_labeled_full.csv
-\u2514\u2500\u2500 README.md
-```
-
 ## Attack Modules
 
 ### CAN Traffic Sniffer
