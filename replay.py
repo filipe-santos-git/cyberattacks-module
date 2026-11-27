@@ -6,14 +6,14 @@ import numpy as np
 from sniffer import capture_traffic
 from pathlib import Path
 
-from can_network import VCAN_CHANNEL, CAN_INTERFACE
+from can_network import VCAN_ATTACKER_CHANNEL, CAN_INTERFACE
 
 
 LOG_DIR = Path("traffic_logs")
 LOG_FILE = LOG_DIR / "can_sniffer.csv"
 
 bus = can.interface.Bus(
-        channel=VCAN_CHANNEL,
+        channel=VCAN_ATTACKER_CHANNEL,
         bustype=CAN_INTERFACE
     )
 

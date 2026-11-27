@@ -53,7 +53,7 @@ def main():
     bustype=CAN_INTERFACE
     )
     try:
-        capture_traffic()
+        capture_traffic(bus)
         print("shutdown_sniffer_Module")
 
     except KeyboardInterrupt:
